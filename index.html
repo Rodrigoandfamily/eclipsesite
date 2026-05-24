@@ -1,844 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eclipse Electrical Services – Licensed Electrician Toronto GTA</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-/* ── TOKENS ── */
-:root {
-  --black:  #080A0C;
-  --coal:   #111316;
-  --dark:   #181C22;
-  --panel:  #1E2330;
-  --border: rgba(255,255,255,0.08);
-  --muted:  rgba(255,255,255,0.38);
-  --text:   rgba(255,255,255,0.88);
-  --white:  #FFFFFF;
-  --volt:   #E8FF00;
-  --danger: #FF3B30;
-  --r-sm: 6px; --r-md: 14px; --r-lg: 24px;
-  --ease: cubic-bezier(0.16,1,0.3,1);
-  --nav-h: 56px;
-}
-
-/* ── RESET — nuclear overflow prevention ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; overflow-x: hidden; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--black); color: var(--text);
-  overflow-x: hidden; line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  width: 100%; max-width: 100%;
-}
-a { color: inherit; text-decoration: none; }
-img { max-width: 100%; display: block; }
-button { font-family: inherit; cursor: pointer; border: none; background: none; }
-
-/* ── NOISE OVERLAY ── */
-body::before {
-  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: .5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
-}
-
-/* ═══════════════════════════════════════
-   NAV
-═══════════════════════════════════════ */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
-  height: var(--nav-h);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px;
-  background: rgba(8,10,12,.97);
-  border-bottom: 1px solid var(--border);
-}
-.logo {
-  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-}
-.logo-bolt {
-  width: 30px; height: 30px; background: var(--volt);
-  border-radius: 7px; display: grid; place-items: center; flex-shrink: 0;
-}
-.logo-bolt svg { width: 15px; height: 15px; fill: var(--black); }
-.logo-text {
-  font-family: 'Bebas Neue', sans-serif; font-size: 17px;
-  letter-spacing: .5px; color: var(--white); white-space: nowrap;
-}
-.logo-text span { color: var(--volt); }
-
-/* desktop links — hidden by default, shown ≥ 768px */
-.nav-links {
-  display: none; list-style: none; align-items: center; gap: 28px;
-}
-.nav-links a {
-  font-size: 12px; font-weight: 500; letter-spacing: .05em;
-  text-transform: uppercase; color: var(--muted); transition: color .2s; white-space: nowrap;
-}
-.nav-links a:hover { color: var(--white); }
-
-/* right side of nav */
-.nav-right {
-  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
-}
-.nav-phone {
-  display: flex; align-items: center; gap: 6px;
-  padding: 7px 11px; background: var(--danger); color: #fff;
-  font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase;
-  border-radius: var(--r-sm); white-space: nowrap; transition: background .2s;
-}
-.nav-phone:hover { background: #d42d22; }
-.nav-phone-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: #fff;
-  animation: pdot 1.4s infinite; flex-shrink: 0;
-}
-@keyframes pdot {
-  0%,100% { opacity:1; transform:scale(1); }
-  50% { opacity:.4; transform:scale(.6); }
-}
-
-/* hamburger button */
-.ham {
-  display: flex; flex-direction: column; justify-content: center;
-  gap: 5px; width: 40px; height: 40px; padding: 8px;
-}
-.ham span {
-  display: block; height: 2px; background: var(--white);
-  border-radius: 2px; transition: transform .3s, opacity .3s, width .3s;
-}
-.ham span:nth-child(1) { width: 20px; }
-.ham span:nth-child(2) { width: 14px; }
-.ham span:nth-child(3) { width: 18px; }
-nav.open .ham span:nth-child(1) { width: 20px; transform: translateY(7px) rotate(45deg); }
-nav.open .ham span:nth-child(2) { opacity: 0; }
-nav.open .ham span:nth-child(3) { width: 20px; transform: translateY(-7px) rotate(-45deg); }
-
-/* mobile drawer */
-.nav-drawer {
-  position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; z-index: 9998;
-  background: rgba(8,10,12,.98);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
-  opacity: 0; transform: translateY(-8px); pointer-events: none;
-  transition: opacity .3s var(--ease), transform .3s var(--ease);
-}
-.nav-drawer.open { opacity: 1; transform: translateY(0); pointer-events: all; }
-.nav-drawer a {
-  font-family: 'Bebas Neue', sans-serif; font-size: 44px;
-  letter-spacing: .04em; color: var(--white); transition: color .2s;
-}
-.nav-drawer a:hover { color: var(--volt); }
-.drawer-cta {
-  display: flex !important; align-items: center; gap: 8px;
-  padding: 16px 36px; background: var(--volt); color: var(--black) !important;
-  font-family: 'DM Sans', sans-serif !important; font-size: 15px !important;
-  font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-  border-radius: var(--r-sm); margin-top: 8px;
-}
-
-/* ═══════════════════════════════════════
-   HERO — mobile first
-═══════════════════════════════════════ */
-.hero {
-  position: relative;
-  padding-top: var(--nav-h);
-  min-height: 100svh;
-  display: flex; flex-direction: column;
-  /* clip decorative bg elements without trapping fixed nav */
-  clip-path: inset(0);
-}
-.hero-bg {
-  position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 70% 55% at 85% 40%, rgba(232,255,0,.08) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 5% 90%, rgba(0,207,255,.04) 0%, transparent 55%),
-    var(--black);
-}
-/* grid — contained, no negative inset that causes overflow */
-.hero-grid {
-  position: absolute; inset: 0; z-index: 0;
-  background-image:
-    linear-gradient(rgba(232,255,0,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(232,255,0,.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 90% 90% at 60% 40%, black 5%, transparent 80%);
-  animation: gdrift 22s linear infinite;
-}
-@keyframes gdrift {
-  from { background-position: 0 0; }
-  to   { background-position: 60px 60px; }
-}
-#hero-canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  z-index: 0; pointer-events: none;
-}
-.hero-content {
-  position: relative; z-index: 2;
-  padding: 40px 20px 56px;
-  display: flex; flex-direction: column;
-  width: 100%; /* never exceed parent */
-}
-
-/* badge */
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 14px; border-radius: 100px;
-  background: rgba(232,255,0,.07); border: 1px solid rgba(232,255,0,.22);
-  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--volt); width: fit-content; margin-bottom: 24px;
-  animation: fadeUp .6s var(--ease) both;
-}
-.badge-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: var(--volt); flex-shrink: 0;
-  animation: bdot 2s ease-out infinite;
-}
-@keyframes bdot {
-  0%   { box-shadow: 0 0 0 0 rgba(232,255,0,.5); }
-  70%  { box-shadow: 0 0 0 7px rgba(232,255,0,0); }
-  100% { box-shadow: 0 0 0 0 rgba(232,255,0,0); }
-}
-
-/* headline */
-.hero-headline {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(60px, 16vw, 130px);
-  line-height: .9; letter-spacing: .01em; color: var(--white);
-  display: flex; flex-direction: column; gap: 2px;
-}
-.hl-w { opacity: 0; transform: translateY(36px) skewY(2deg); animation: win .65s var(--ease) forwards; }
-.hl-w1 { animation-delay: .1s; }
-.hl-w2 { animation-delay: .22s; color: var(--volt); }
-.hl-w3 { animation-delay: .34s; -webkit-text-stroke: 1.5px rgba(255,255,255,.28); color: transparent; }
-@keyframes win { to { opacity: 1; transform: translateY(0) skewY(0); } }
-
-/* subtext */
-.hero-sub {
-  margin-top: 20px; font-size: 16px; line-height: 1.65; color: var(--muted);
-  opacity: 0; animation: fadeUp .65s .48s var(--ease) forwards;
-}
-.hero-sub strong { color: var(--text); font-weight: 600; }
-
-/* CTA buttons — full width stacked on mobile */
-.hero-btns {
-  display: flex; flex-direction: column; gap: 10px;
-  margin-top: 28px;
-  opacity: 0; animation: fadeUp .65s .62s var(--ease) forwards;
-}
-.btn-volt {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  padding: 18px 20px; min-height: 54px;
-  background: var(--volt); color: var(--black);
-  font-size: 15px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-  border-radius: var(--r-sm); transition: transform .2s var(--ease), box-shadow .2s;
-}
-.btn-volt:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,255,0,.35); }
-.btn-ghost {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 17px 20px; min-height: 54px;
-  background: transparent; color: var(--white);
-  font-size: 15px; font-weight: 500;
-  border: 1px solid rgba(255,255,255,.15); border-radius: var(--r-sm);
-  transition: border-color .2s, background .2s;
-}
-.btn-ghost:hover { border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.04); }
-
-/* stats row — grid so it never overflows */
-.hero-stats {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-  align-items: center;
-  margin-top: 36px; padding-top: 28px;
-  border-top: 1px solid var(--border);
-  opacity: 0; animation: fadeUp .65s .78s var(--ease) forwards;
-}
-.stat-divider { width: 1px; height: 34px; background: var(--border); margin: 0 12px; }
-.stat-num {
-  font-family: 'Bebas Neue', sans-serif; font-size: 34px;
-  color: var(--white); line-height: 1; letter-spacing: .01em;
-}
-.stat-num .v { color: var(--volt); }
-.stat-label {
-  font-size: 10px; font-weight: 600; letter-spacing: .06em;
-  text-transform: uppercase; color: var(--muted); margin-top: 3px; white-space: nowrap;
-}
-
-@keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
-
-/* ═══════════════════════════════════════
-   MARQUEE
-═══════════════════════════════════════ */
-.marquee { background: var(--volt); padding: 13px 0; overflow: hidden; display: flex; }
-.mq-track { display: flex; animation: mq 20s linear infinite; flex-shrink: 0; }
-@keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.mq-item {
-  display: flex; align-items: center; gap: 10px; padding: 0 32px;
-  white-space: nowrap; font-family: 'Bebas Neue', sans-serif;
-  font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--black);
-}
-.mq-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(0,0,0,.3); }
-
-/* ═══════════════════════════════════════
-   SHARED
-═══════════════════════════════════════ */
-.section { padding: 64px 20px; }
-.section-label {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
-  letter-spacing: .14em; text-transform: uppercase; color: var(--volt); margin-bottom: 14px;
-}
-.section-label::before { content: ''; width: 18px; height: 1px; background: var(--volt); }
-.section-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(36px, 8vw, 72px); line-height: .95; letter-spacing: .02em; color: var(--white);
-}
-.section-title .dim { color: rgba(255,255,255,.22); }
-
-/* ═══════════════════════════════════════
-   SERVICES
-═══════════════════════════════════════ */
-#services { background: var(--coal); }
-.services-intro { margin-bottom: 36px; }
-.services-intro p { font-size: 16px; line-height: 1.75; color: var(--muted); margin-top: 14px; }
-.svc-grid { display: grid; grid-template-columns: 1fr; gap: 2px; }
-.svc-card {
-  background: var(--dark); padding: 28px 20px;
-  position: relative; overflow: hidden; transition: background .3s;
-}
-.svc-card:hover { background: var(--panel); }
-.svc-card::before {
-  content: ''; position: absolute; inset: 0;
-  border: 2px solid var(--volt); opacity: 0; transition: opacity .3s; pointer-events: none;
-}
-.svc-card:hover::before { opacity: 1; }
-.svc-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .1em; margin-bottom: 18px; }
-.svc-icon {
-  width: 46px; height: 46px; border-radius: 11px;
-  background: rgba(232,255,0,.08); display: grid; place-items: center; margin-bottom: 14px;
-  transition: background .3s;
-}
-.svc-card:hover .svc-icon { background: rgba(232,255,0,.16); }
-.svc-icon svg { width: 21px; height: 21px; stroke: var(--volt); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.svc-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .02em; color: var(--white); margin-bottom: 9px; line-height: 1.05; }
-.svc-desc { font-size: 14px; line-height: 1.7; color: var(--muted); }
-.svc-link {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 20px;
-  font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--volt);
-  opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s;
-}
-.svc-card:hover .svc-link { opacity: 1; transform: translateX(0); }
-
-/* ═══════════════════════════════════════
-   ABOUT
-═══════════════════════════════════════ */
-#about { background: var(--black); }
-.about-inner { display: flex; flex-direction: column; }
-.about-visual { background: var(--dark); position: relative; overflow: hidden; min-height: 260px; }
-.circuit-bg { position: absolute; top: 0; right: 0; width: 60%; height: 100%; opacity: .04; }
-.about-visual-inner { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: 24px; }
-.about-visual-card {
-  background: rgba(8,10,12,.87); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 18px; width: 100%;
-}
-.about-vis-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); }
-.about-vis-row:last-child { border-bottom: none; }
-.about-vis-label { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.about-vis-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--white); }
-.about-vis-pill { padding: 3px 9px; border-radius: 100px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
-.pill-green { background: rgba(52,199,89,.15); color: #34C759; }
-.pill-volt  { background: rgba(232,255,0,.12); color: var(--volt); }
-.about-text { padding: 48px 20px; }
-.about-body { font-size: 16px; line-height: 1.8; color: var(--muted); margin-top: 18px; }
-.about-body strong { color: var(--text); font-weight: 500; }
-.about-checklist { list-style: none; margin-top: 26px; display: flex; flex-direction: column; gap: 12px; }
-.about-checklist li { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--text); }
-.check-icon {
-  width: 22px; height: 22px; border-radius: 50%;
-  background: rgba(232,255,0,.1); border: 1px solid rgba(232,255,0,.25);
-  display: grid; place-items: center; flex-shrink: 0;
-}
-.check-icon svg { width: 11px; height: 11px; stroke: var(--volt); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-
-/* ═══════════════════════════════════════
-   EMERGENCY
-═══════════════════════════════════════ */
-.emergency-section {
-  background: var(--danger); padding: 56px 20px;
-  position: relative; overflow: hidden;
-}
-.emergency-section::before {
-  content: '24H'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
-  font-family: 'Bebas Neue', sans-serif; font-size: clamp(120px, 30vw, 280px);
-  color: rgba(255,255,255,.06); line-height: 1; pointer-events: none; letter-spacing: -.02em;
-}
-.emg-inner { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 24px; }
-.emg-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.7); margin-bottom: 8px; }
-.emg-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(30px, 8vw, 68px); color: #fff; line-height: .95; letter-spacing: .02em; }
-.btn-call {
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  padding: 18px 28px; background: #fff; color: var(--danger);
-  font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .05em;
-  border-radius: var(--r-sm); transition: transform .2s var(--ease); width: 100%;
-}
-.btn-call:hover { transform: translateY(-2px); }
-.btn-call svg { width: 20px; height: 20px; flex-shrink: 0; }
-
-/* ═══════════════════════════════════════
-   PROCESS
-═══════════════════════════════════════ */
-#process { background: var(--coal); }
-.process-grid { display: grid; grid-template-columns: 1fr; gap: 2px; margin-top: 48px; }
-.process-step { padding: 32px 20px; background: var(--dark); position: relative; }
-.process-num { font-family: 'Bebas Neue', sans-serif; font-size: 60px; color: rgba(255,255,255,.05); line-height: 1; margin-bottom: 12px; }
-.process-step-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .03em; color: var(--white); margin-bottom: 8px; }
-.process-step-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
-.process-arrow {
-  position: absolute; bottom: 20px; right: 20px;
-  width: 30px; height: 30px; background: var(--volt); border-radius: 50%; display: grid; place-items: center;
-}
-.process-arrow svg { width: 13px; height: 13px; fill: none; stroke: var(--black); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.process-step:last-child .process-arrow { display: none; }
-
-/* ═══════════════════════════════════════
-   CONTACT
-═══════════════════════════════════════ */
-#contact { background: var(--black); }
-.contact-info { background: var(--dark); padding: 56px 20px; }
-.contact-info-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(34px, 8vw, 60px); color: var(--white); line-height: .95; margin: 14px 0 32px; }
-.contact-details { display: flex; flex-direction: column; gap: 22px; }
-.contact-detail-item { display: flex; align-items: flex-start; gap: 14px; }
-.cd-icon { width: 42px; height: 42px; border-radius: 11px; background: rgba(232,255,0,.08); border: 1px solid rgba(232,255,0,.15); display: grid; place-items: center; flex-shrink: 0; }
-.cd-icon svg { width: 17px; height: 17px; stroke: var(--volt); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.cd-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-.cd-val { font-size: 15px; font-weight: 500; color: var(--white); }
-.cd-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.contact-form { padding: 48px 20px; }
-.form-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--white); letter-spacing: .03em; margin-bottom: 26px; }
-.frow { display: grid; grid-template-columns: 1fr; gap: 0; }
-.fgroup { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-.flabel { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.finput, .ftextarea {
-  background: var(--panel); border: 1px solid var(--border); border-radius: var(--r-sm);
-  padding: 15px 14px; color: var(--white); font-family: 'DM Sans', sans-serif;
-  font-size: 16px; /* prevents iOS zoom */ width: 100%; outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-.finput:focus, .ftextarea:focus { border-color: rgba(232,255,0,.5); box-shadow: 0 0 0 3px rgba(232,255,0,.07); }
-.finput::placeholder, .ftextarea::placeholder { color: rgba(255,255,255,.2); }
-.ftextarea { resize: none; min-height: 120px; }
-.btn-submit {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  width: 100%; padding: 20px; min-height: 58px;
-  background: var(--volt); color: var(--black);
-  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
-  letter-spacing: .05em; text-transform: uppercase;
-  border-radius: var(--r-sm); transition: transform .2s var(--ease), box-shadow .2s;
-}
-.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(232,255,0,.35); }
-
-/* ═══════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════ */
-footer { background: var(--coal); border-top: 1px solid var(--border); padding: 44px 20px 28px; }
-.footer-top { display: grid; grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
-.footer-brand-desc { font-size: 13px; line-height: 1.75; color: var(--muted); margin-top: 12px; }
-.footer-col-title { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--white); margin-bottom: 14px; }
-.footer-links { display: flex; flex-direction: column; gap: 8px; list-style: none; }
-.footer-links a { font-size: 14px; color: var(--muted); transition: color .2s; }
-.footer-links a:hover { color: var(--white); }
-.footer-hours { display: flex; flex-direction: column; gap: 7px; }
-.hours-row { display: flex; justify-content: space-between; font-size: 13px; }
-.hours-day { color: var(--muted); }
-.hours-time { color: var(--white); font-weight: 500; }
-.footer-bottom { display: flex; flex-direction: column; gap: 6px; padding-top: 22px; }
-.footer-copy { font-size: 12px; color: var(--muted); }
-.footer-copy span { color: var(--volt); }
-
-/* ═══════════════════════════════════════
-   SCROLL REVEAL
-═══════════════════════════════════════ */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
-.reveal.visible { opacity: 1; transform: translateY(0); }
-
-/* ═══════════════════════════════════════
-   DESKTOP UPGRADES  ≥ 768px
-═══════════════════════════════════════ */
-@media (min-width: 768px) {
-  :root { --nav-h: 64px; }
-  nav { padding: 0 40px; }
-  .ham { display: none; }
-  .nav-links { display: flex; }
-  .logo-text { font-size: 20px; }
-  .logo-bolt { width: 34px; height: 34px; }
-  .logo-bolt svg { width: 17px; height: 17px; }
-  .nav-phone { font-size: 12px; padding: 9px 16px; }
-
-  .hero-content { padding: 60px 60px 80px; max-width: 700px; }
-  .hero-btns { flex-direction: row; }
-  .btn-volt, .btn-ghost { width: auto; padding: 16px 28px; font-size: 14px; min-height: 50px; }
-  .stat-num { font-size: 42px; }
-  .stat-divider { margin: 0 22px; }
-
-  .svc-grid { grid-template-columns: 1fr 1fr; }
-  .svc-card { padding: 36px 30px; }
-
-  .about-inner { flex-direction: row; }
-  .about-visual { flex: 1; min-height: 500px; }
-  .about-text { flex: 1; padding: 72px 56px; }
-
-  .emg-inner { flex-direction: row; align-items: center; justify-content: space-between; }
-  .btn-call { width: auto; }
-
-  .process-grid { grid-template-columns: 1fr 1fr; }
-
-  #contact { display: grid; grid-template-columns: 1fr 1fr; }
-  .contact-info { padding: 72px 48px; }
-  .contact-form { padding: 72px 48px; }
-  .frow { grid-template-columns: 1fr 1fr; gap: 14px; }
-
-  .footer-top { grid-template-columns: 2fr 1fr 1fr 1.3fr; gap: 40px; }
-  .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; }
-}
-
-@media (min-width: 1100px) {
-  .svc-grid { grid-template-columns: 1fr 1fr 1fr; }
-  .process-grid { grid-template-columns: repeat(4, 1fr); }
-  .hero-content { padding: 80px 80px 100px; }
-  nav { padding: 0 60px; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eclipse Electrical Services | Residential & Commercial Electrician Toronto GTA</title>
+  <style>
+    /* Add your existing CSS here */
+  </style>
 </head>
 <body>
+  <!-- Header -->
+  <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a href="tel:4168387519">📞 416-838-7519</a>
+      <a href="contact.html">Free Estimate</a>
+    </nav>
+  </header>
 
-<!-- ── NAV ── -->
-<nav id="nav">
-  <a href="#" class="logo">
-    <div class="logo-bolt">
-      <svg viewBox="0 0 24 24"><path d="M13 2L4.09 12.96A1 1 0 005 14.5h5.5L11 22l8.91-10.96A1 1 0 0019 10H13.5L13 2z"/></svg>
-    </div>
-    <div class="logo-text">ECLIPSE <span>ELECTRICAL</span></div>
-  </a>
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Toronto & GTA — Serving Since 1999</h1>
+    <h2>Residential & Commercial Electrician</h2>
+    <p>Eclipse Electrical Services is your leading local electrical contractor in Toronto – GTA. Fully trained, certified Master Electricians specializing in all phases of electrical work — wiring, installation, repair and maintenance.</p>
+    <a href="contact.html">Free Estimate</a>
+    <a href="tel:4168387519">416-838-7519</a>
+  </section>
 
-  <ul class="nav-links">
-    <li><a href="#services">Services</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#process">Process</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-
-  <div class="nav-right">
-    <a href="tel:4168387519" class="nav-phone">
-      <span class="nav-phone-dot"></span>416-838-7519
-    </a>
-    <button class="ham" id="ham" aria-label="Open menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
-<!-- ── MOBILE DRAWER ── -->
-<div class="nav-drawer" id="drawer">
-  <a href="#services" class="drawer-link">Services</a>
-  <a href="#about" class="drawer-link">About</a>
-  <a href="#process" class="drawer-link">Process</a>
-  <a href="#contact" class="drawer-link">Contact</a>
-  <a href="tel:4168387519" class="drawer-cta">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L9.91 10a16 16 0 006 6l.43-.43a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 17.92z"/></svg>
-    Call 416-838-7519
-  </a>
-</div>
-
-<!-- ── HERO ── -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <canvas id="hero-canvas"></canvas>
-
-  <div class="hero-content">
-    <div class="hero-badge">
-      <span class="badge-dot"></span>Licensed &amp; Certified · Toronto GTA
-    </div>
-
-    <h1 class="hero-headline">
-      <span class="hl-w hl-w1">POWER</span>
-      <span class="hl-w hl-w2">YOUR</span>
-      <span class="hl-w hl-w3">WORLD.</span>
-    </h1>
-
-    <p class="hero-sub">
-      Eclipse Electrical is Toronto's trusted electrical contractor —
-      <strong>fast, licensed &amp; 24/7</strong> for any residential or commercial job in the GTA.
-    </p>
-
-    <div class="hero-btns">
-      <a href="#contact" class="btn-volt">
-        Get Free Estimate
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-      <a href="tel:4168387519" class="btn-ghost">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L9.91 10a16 16 0 006 6l.43-.43a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 17.92z"/></svg>
-        416-838-7519
-      </a>
-    </div>
-
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-num"><span class="counter" data-target="15">0</span><span class="v">+</span></div>
-        <div class="stat-label">Years Exp.</div>
+  <!-- NEW SECURE LEAD FORM SECTION -->
+  <section id="quote-request" class="quote-section">
+    <h3>Request a Free Quote</h3>
+    <form name="lead-form" method="POST" action="/submit-lead" class="quote-form">
+      <!-- Honeypot: Hidden from humans, catches bots -->
+      <div style="display:none; visibility:hidden;" aria-hidden="true">
+        <label>Leave blank <input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <div class="stat-num">2K<span class="v">+</span></div>
-        <div class="stat-label">Jobs Done</div>
+
+      <div class="form-group">
+        <label for="name">Full Name *</label>
+        <input type="text" id="name" name="name" required placeholder="John Doe">
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <div class="stat-num">24<span class="v">H</span></div>
-        <div class="stat-label">Emergency</div>
+
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input type="email" id="email" name="email" required placeholder="john@example.com">
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- ── MARQUEE ── -->
-<div class="marquee" aria-hidden="true">
-  <div class="mq-track" id="mq">
-    <span class="mq-item">Residential Electrical<span class="mq-dot"></span></span>
-    <span class="mq-item">Commercial Electrical<span class="mq-dot"></span></span>
-    <span class="mq-item">Emergency 24/7<span class="mq-dot"></span></span>
-    <span class="mq-item">EV Charger Install<span class="mq-dot"></span></span>
-    <span class="mq-item">Panel Upgrades<span class="mq-dot"></span></span>
-    <span class="mq-item">Safety Inspections<span class="mq-dot"></span></span>
-    <span class="mq-item">Toronto GTA<span class="mq-dot"></span></span>
-    <span class="mq-item">Licensed &amp; Insured<span class="mq-dot"></span></span>
-    <span class="mq-item">Residential Electrical<span class="mq-dot"></span></span>
-    <span class="mq-item">Commercial Electrical<span class="mq-dot"></span></span>
-    <span class="mq-item">Emergency 24/7<span class="mq-dot"></span></span>
-    <span class="mq-item">EV Charger Install<span class="mq-dot"></span></span>
-    <span class="mq-item">Panel Upgrades<span class="mq-dot"></span></span>
-    <span class="mq-item">Safety Inspections<span class="mq-dot"></span></span>
-    <span class="mq-item">Toronto GTA<span class="mq-dot"></span></span>
-    <span class="mq-item">Licensed &amp; Insured<span class="mq-dot"></span></span>
-  </div>
-</div>
-
-<!-- ── SERVICES ── -->
-<section id="services" class="section">
-  <div class="services-intro reveal">
-    <div class="section-label">What We Do</div>
-    <h2 class="section-title">SERVICES<br><span class="dim">THAT DELIVER</span></h2>
-    <p>From a blown fuse to a full commercial fit-out — Eclipse Electrical has the experience, licensing, and crew to get the job done right, on time, and on budget anywhere in the Toronto–GTA area.</p>
-  </div>
-  <div class="svc-grid">
-    <div class="svc-card reveal"><div class="svc-num">01 / 06</div><div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="svc-name">Residential Electrical</div><div class="svc-desc">Complete home electrical services — installations, rewires, lighting upgrades, panel replacements and fault repairs.</div><div class="svc-link">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="svc-card reveal"><div class="svc-num">02 / 06</div><div class="svc-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div class="svc-name">Commercial Electrical</div><div class="svc-desc">Professional electrical contracting for offices, retail shops, warehouses and restaurants — on schedule and code-compliant.</div><div class="svc-link">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="svc-card reveal"><div class="svc-num">03 / 06</div><div class="svc-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="svc-name">24H Emergency</div><div class="svc-desc">Round-the-clock emergency electrical services throughout Toronto GTA. We respond fast — because emergencies can't wait.</div><div class="svc-link">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="svc-card reveal"><div class="svc-num">04 / 06</div><div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div class="svc-name">EV Charger Install</div><div class="svc-desc">Future-proof your home or business with a certified Level 2 EV charger installation — fast, safe, rebate-compatible.</div><div class="svc-link">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="svc-card reveal"><div class="svc-num">05 / 06</div><div class="svc-icon"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="svc-name">Panel Upgrades</div><div class="svc-desc">Old or overloaded panel? We upgrade switchboards to modern standards — increasing capacity and safety for your property.</div><div class="svc-link">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="svc-card reveal"><div class="svc-num">06 / 06</div><div class="svc-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="svc-name">Safety Inspections</div><div class="svc-desc">Comprehensive electrical safety inspections for homes and businesses. Find hazards before they become emergencies.</div><div class="svc-link">Learn more <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-  </div>
-</section>
-
-<!-- ── ABOUT ── -->
-<section id="about">
-  <div class="about-inner">
-    <div class="about-visual">
-      <div class="circuit-bg"><svg viewBox="0 0 400 600" fill="none" style="width:100%;height:100%"><line x1="50" y1="0" x2="50" y2="600" stroke="white" stroke-width="1"/><line x1="150" y1="0" x2="150" y2="600" stroke="white" stroke-width="1"/><line x1="250" y1="0" x2="250" y2="600" stroke="white" stroke-width="1"/><line x1="350" y1="0" x2="350" y2="600" stroke="white" stroke-width="1"/><line x1="0" y1="150" x2="400" y2="150" stroke="white" stroke-width="1"/><line x1="0" y1="300" x2="400" y2="300" stroke="white" stroke-width="1"/><line x1="0" y1="450" x2="400" y2="450" stroke="white" stroke-width="1"/><circle cx="150" cy="150" r="5" fill="white"/><circle cx="250" cy="300" r="5" fill="white"/><path d="M50 150 L150 150 L150 300 L250 300" stroke="white" stroke-width="2"/></svg></div>
-      <div class="about-visual-inner">
-        <div class="about-visual-card">
-          <div class="about-vis-row"><span class="about-vis-label">License</span><span class="about-vis-pill pill-green">✓ Certified</span></div>
-          <div class="about-vis-row"><span class="about-vis-label">Coverage</span><span class="about-vis-val">Toronto · GTA</span></div>
-          <div class="about-vis-row"><span class="about-vis-label">Residential</span><span class="about-vis-pill pill-volt">Available</span></div>
-          <div class="about-vis-row"><span class="about-vis-label">Commercial</span><span class="about-vis-pill pill-volt">Available</span></div>
-          <div class="about-vis-row"><span class="about-vis-label">Emergency</span><span class="about-vis-pill pill-green">24/7 Active</span></div>
-          <div class="about-vis-row"><span class="about-vis-label">Estimates</span><span class="about-vis-pill pill-volt">Always Free</span></div>
-        </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="416-555-0199">
       </div>
-    </div>
-    <div class="about-text">
-      <div class="section-label reveal">Who We Are</div>
-      <h2 class="section-title reveal">LOCAL EXPERTS.<br><span class="dim">TRUSTED WORK.</span></h2>
-      <p class="about-body reveal">Eclipse Electrical Services is <strong>Toronto's leading electrical contractor</strong>, serving homeowners and businesses across the GTA for over 15 years. We show up on time, work cleanly, and charge fair prices.</p>
-      <p class="about-body reveal" style="margin-top:12px">Whether it's a small fault repair or a full shop fit-out, our <strong>fully licensed electricians</strong> bring the same precision to every project.</p>
-      <ul class="about-checklist reveal">
-        <li><div class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Fully licensed electrical contractors in Ontario</li>
-        <li><div class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Transparent pricing — free estimates always</li>
-        <li><div class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>24-hour emergency response throughout GTA</li>
-        <li><div class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>5-star rated on Google by Toronto customers</li>
-      </ul>
-    </div>
-  </div>
-</section>
 
-<!-- ── EMERGENCY ── -->
-<div class="emergency-section">
-  <div class="emg-inner">
-    <div>
-      <div class="emg-label">Emergency Electrical Services</div>
-      <h2 class="emg-title">ELECTRICAL EMERGENCY?<br>WE'RE ALWAYS ON.</h2>
-    </div>
-    <a href="tel:4168387519" class="btn-call">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L9.91 10a16 16 0 006 6l.43-.43a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 17.92z"/></svg>
-      416-838-7519
-    </a>
-  </div>
-</div>
-
-<!-- ── PROCESS ── -->
-<section id="process" class="section">
-  <div class="section-label reveal">How It Works</div>
-  <h2 class="section-title reveal">SIMPLE <span class="dim">PROCESS</span></h2>
-  <div class="process-grid">
-    <div class="process-step reveal"><div class="process-num">01</div><div class="process-step-title">CALL OR BOOK</div><div class="process-step-desc">Reach us by phone, email, or the form below. We respond fast — usually within the hour.</div><div class="process-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="process-step reveal"><div class="process-num">02</div><div class="process-step-title">FREE ESTIMATE</div><div class="process-step-desc">We assess your project and provide a clear, no-obligation quote. No hidden fees, ever.</div><div class="process-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="process-step reveal"><div class="process-num">03</div><div class="process-step-title">WE GET TO WORK</div><div class="process-step-desc">Our licensed electricians arrive on time, work cleanly and efficiently, respecting your space.</div><div class="process-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div></div>
-    <div class="process-step reveal"><div class="process-num">04</div><div class="process-step-title">DONE RIGHT</div><div class="process-step-desc">Job complete, inspected, up to code. We follow up to make sure you're 100% satisfied.</div></div>
-  </div>
-</section>
-
-<!-- ── CONTACT ── -->
-<section id="contact">
-  <div class="contact-info">
-    <div class="section-label">Get in Touch</div>
-    <h2 class="contact-info-title">LET'S TALK<br>ELECTRICAL</h2>
-    <div class="contact-details">
-      <div class="contact-detail-item"><div class="cd-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L9.91 10a16 16 0 006 6l.43-.43a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 17.92z"/></svg></div><div><div class="cd-label">Phone</div><div class="cd-val"><a href="tel:4168387519" style="color:inherit">416-838-7519</a></div><div class="cd-sub">24/7 Emergency Line</div></div></div>
-      <div class="contact-detail-item"><div class="cd-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div><div class="cd-label">Email</div><div class="cd-val">info@eclipse-electrical.ca</div><div class="cd-sub">We reply within 2 hours</div></div></div>
-      <div class="contact-detail-item"><div class="cd-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="cd-label">Hours</div><div class="cd-val">Mon – Sat: 8AM – 8PM</div><div class="cd-sub">Emergency available 24/7</div></div></div>
-      <div class="contact-detail-item"><div class="cd-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="cd-label">Service Area</div><div class="cd-val">Toronto – GTA</div><div class="cd-sub">And surrounding communities</div></div></div>
-    </div>
-  </div>
-  <div class="contact-form">
-    <div class="form-title">REQUEST A FREE ESTIMATE</div>
-    <div class="frow"><div class="fgroup"><label class="flabel">First Name</label><input type="text" class="finput" placeholder="John"></div><div class="fgroup"><label class="flabel">Last Name</label><input type="text" class="finput" placeholder="Smith"></div></div>
-    <div class="frow"><div class="fgroup"><label class="flabel">Email</label><input type="email" class="finput" placeholder="john@email.com"></div><div class="fgroup"><label class="flabel">Phone</label><input type="tel" class="finput" placeholder="416-000-0000"></div></div>
-    <div class="fgroup"><label class="flabel">Service Type</label><select class="finput" style="appearance:none"><option value="" disabled selected>Select a service...</option><option>Residential Electrical</option><option>Commercial Electrical</option><option>Emergency Service</option><option>EV Charger Installation</option><option>Panel / Switchboard Upgrade</option><option>Safety Inspection</option><option>Other</option></select></div>
-    <div class="fgroup"><label class="flabel">Tell Us About Your Project</label><textarea class="ftextarea" placeholder="Describe your electrical project or issue..."></textarea></div>
-    <button class="btn-submit" type="submit">Send Request — It's Free <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-  </div>
-</section>
-
-<!-- ── FOOTER ── -->
-<footer>
-  <div class="footer-top">
-    <div>
-      <a href="#" class="logo"><div class="logo-bolt"><svg viewBox="0 0 24 24"><path d="M13 2L4.09 12.96A1 1 0 005 14.5h5.5L11 22l8.91-10.96A1 1 0 0019 10H13.5L13 2z"/></svg></div><div class="logo-text">ECLIPSE <span>ELECTRICAL</span></div></a>
-      <p class="footer-brand-desc">Toronto's trusted licensed electrical contractor — residential, commercial, and 24/7 emergency service across the GTA.</p>
-    </div>
-    <div>
-      <div class="footer-col-title">Quick Links</div>
-      <ul class="footer-links"><li><a href="#services">Our Services</a></li><li><a href="#about">About Us</a></li><li><a href="#contact">Free Estimate</a></li><li><a href="#contact">Contact Us</a></li><li><a href="#">Gallery</a></li><li><a href="#">Privacy Policy</a></li></ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Services</div>
-      <ul class="footer-links"><li><a href="#">Residential Electrical</a></li><li><a href="#">Commercial Electrical</a></li><li><a href="#">Emergency Electrician</a></li><li><a href="#">EV Charger Install</a></li><li><a href="#">Panel Upgrades</a></li><li><a href="#">Safety Inspections</a></li></ul>
-    </div>
-    <div>
-      <div class="footer-col-title">Business Hours</div>
-      <div class="footer-hours">
-        <div class="hours-row"><span class="hours-day">Mon – Fri</span><span class="hours-time">8AM – 8PM</span></div>
-        <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">8AM – 8PM</span></div>
-        <div class="hours-row"><span class="hours-day">Emergency</span><span class="hours-time" style="color:var(--danger)">24 / 7</span></div>
+      <div class="form-group">
+        <label for="service_type">Type of Service</label>
+        <select id="service_type" name="service_type">
+          <option value="Residential Electrical">Residential Electrical</option>
+          <option value="Commercial / Industrial">Commercial / Industrial</option>
+          <option value="Emergency Service">Emergency Service</option>
+          <option value="EV Charger Installation">EV Charger Installation</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
+
+      <div class="form-group">
+        <label for="message">Project Details</label>
+        <textarea id="message" name="message" rows="4" placeholder="Describe your electrical needs..."></textarea>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <label>
+          <input type="checkbox" name="consent" value="true" required>
+          I agree to the <a href="#privacy">Privacy Policy</a> and consent to being contacted regarding my request.
+        </label>
+      </div>
+
+      <button type="submit">Send Request</button>
+      <p class="form-status" style="display:none; margin-top: 10px; font-weight: 500;"></p>
+    </form>
+    <p style="margin-top: 15px;">Or call us: <a href="tel:4168387519">416-838-7519</a></p>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="feature">
+      <h4>Fast Response</h4>
+      <p>We show up on time and get the job done efficiently — every time.</p>
     </div>
-  </div>
-  <div class="footer-bottom">
-    <div class="footer-copy">© 2026 Eclipse Electrical Services Ltd. · <span>Toronto, Ontario</span></div>
-    <div class="footer-copy">Licensed Electrical Contractor · GTA since 2009</div>
-  </div>
-</footer>
+    <div class="feature">
+      <h4>24-Hour Emergency</h4>
+      <p>Electrical emergencies don't wait — neither do we. Available 24/7.</p>
+    </div>
+    <div class="feature">
+      <h4>Licensed & Insured</h4>
+      <p>Fully licensed Master Electricians — your safety is our priority.</p>
+    </div>
+    <div class="feature">
+      <h4>Competitive Pricing</h4>
+      <p>Quality work at a fair price. Free no-obligation estimates.</p>
+    </div>
+  </section>
 
-<script>
-// ── HAMBURGER ──────────────────────────────────────────────────────────
-const navEl   = document.getElementById('nav');
-const drawer  = document.getElementById('drawer');
-const hamBtn  = document.getElementById('ham');
+  <!-- Services Section -->
+  <section class="services">
+    <h3>What We Offer</h3>
+    <h4>Electrical Services in Toronto</h4>
+    <p>We specialize in electrical building maintenance, upgrades, installs, and fit-outs across Toronto and the GTA. Our fully licensed electricians are equipped to handle any job — big or small.</p>
+    
+    <div class="service-item">
+      <h5>Lights & Fans Install</h5>
+      <p>Install or upgrade lighting systems, power units, or ceiling fans for your home or business in Toronto.</p>
+    </div>
+    
+    <div class="service-item">
+      <h5>Electrical Maintenance</h5>
+      <p>Regular electrical maintenance in Toronto — we'll be there when you need us.</p>
+    </div>
+    
+    <div class="service-item">
+      <h5>Faults & Repairs</h5>
+      <p>From simple repairs to a complete overhaul — we ensure your wiring and fittings are updated to the highest level.</p>
+    </div>
+    
+    <div class="service-item">
+      <h5>Installs & Upgrades</h5>
+      <p>New electrical installations or upgrades to existing buildings — we deliver the highest standards.</p>
+    </div>
+    
+    <div class="service-item">
+      <h5>Switchboard Upgrades</h5>
+      <p>Full electrical switchboard upgrade and installation service in Toronto.</p>
+    </div>
+    
+    <div class="service-item">
+      <h5>Safety Inspections</h5>
+      <p>Your safety is our priority — professional and thorough electrical safety inspections in Toronto.</p>
+    </div>
+  </section>
 
-hamBtn.addEventListener('click', () => {
-  const open = navEl.classList.toggle('open');
-  drawer.classList.toggle('open', open);
-});
-document.querySelectorAll('.drawer-link, .drawer-cta').forEach(a =>
-  a.addEventListener('click', () => {
-    navEl.classList.remove('open');
-    drawer.classList.remove('open');
-  })
-);
+  <!-- CTA Section -->
+  <section class="cta">
+    <h3>Looking for a Qualified Electrician in Toronto You Can Count On?</h3>
+    <p>Whether it's a small electrical fault or an entire shop fit-out, our licensed electricians in Toronto – GTA are ready to help. Quality work done efficiently and on budget.</p>
+    <a href="tel:4168387519">📞 Call Now: 416-838-7519</a>
+    <a href="contact.html">Get a Free Estimate</a>
+  </section>
 
-// ── NAV LOCK ───────────────────────────────────────────────────────────
-function lockNav() { navEl.style.top = '0px'; navEl.style.position = 'fixed'; }
-lockNav();
-window.addEventListener('scroll', lockNav, { passive: true });
-window.addEventListener('resize', lockNav,  { passive: true });
+  <!-- Footer -->
+  <footer>
+    <div class="footer-section">
+      <h4>Services</h4>
+      <a href="services.html">Residential Electrical</a>
+      <a href="services.html">Commercial & Industrial</a>
+      <a href="services.html">Emergency Electrician</a>
+      <a href="services.html">EV Charger Installation</a>
+      <a href="services.html">All Services</a>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Free Estimate</a>
+      <a href="contact.html">Contact Us</a>
+    </div>
+    
+    <div class="footer-section">
+      <h4>Business Hours</h4>
+      <p>Monday – Friday: 8am – 8pm<br>
+      Saturday: 8am – 8pm<br>
+      Sunday: Closed<br>
+      24-Hour Emergency Service</p>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>© 2025 Eclipse Electrical Services Ltd. All rights reserved.</p>
+      <a href="#">Privacy Policy</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
 
-// ── PARTICLE CANVAS ────────────────────────────────────────────────────
-const canvas = document.getElementById('hero-canvas');
-const ctx    = canvas.getContext('2d');
-let W, H, particles = [];
+  <!-- FORM HANDLER SCRIPT - ADD THIS BEFORE </body> -->
+  <script>
+    document.querySelector('.quote-form')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const statusEl = form.querySelector('.form-status');
+      const btn = form.querySelector('button[type="submit"]');
+      
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      statusEl.style.display = 'block';
 
-function resizeCanvas() {
-  const hero = canvas.parentElement;
-  W = canvas.width  = hero.offsetWidth;
-  H = canvas.height = hero.offsetHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+      const fd = new FormData(form);
+      // Merge extra fields into message for backend compatibility
+      const msg = fd.get('message') || '';
+      const phone = fd.get('phone') || 'Not provided';
+      const svc = fd.get('service_type') || 'Not specified';
+      fd.set('message', `[Service: ${svc}] [Phone: ${phone}]\n${msg}`);
 
-class Particle {
-  constructor() { this.reset(); }
-  reset() {
-    this.x = Math.random() * W; this.y = Math.random() * H;
-    this.vx = (Math.random() - .5) * .28; this.vy = (Math.random() - .5) * .22 - .07;
-    this.r  = Math.random() * 1.3 + .3;   this.a  = Math.random() * .4 + .08;
-    this.life = 0; this.maxLife = Math.random() * 200 + 80;
-  }
-  update() {
-    this.x += this.vx; this.y += this.vy; this.life++;
-    if (this.life > this.maxLife || this.y < 0) this.reset();
-  }
-  draw() {
-    const p = this.life / this.maxLife;
-    const f = p < .1 ? p * 10 : p > .8 ? (1 - p) * 5 : 1;
-    ctx.save();
-    ctx.globalAlpha = this.a * f;
-    ctx.fillStyle = '#E8FF00'; ctx.shadowColor = '#E8FF00'; ctx.shadowBlur = 5;
-    ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  }
-}
-for (let i = 0; i < 50; i++) particles.push(new Particle());
-(function loop() { ctx.clearRect(0, 0, W, H); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(loop); })();
-
-// ── COUNTER ────────────────────────────────────────────────────────────
-function animCounter(el) {
-  const t = +el.dataset.target, dur = 1400, s = performance.now();
-  (function step(now) {
-    const p = Math.min((now - s) / dur, 1), e = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.round(e * t);
-    if (p < 1) requestAnimationFrame(step);
-  })(s);
-}
-const statsEl = document.querySelector('.hero-stats');
-if (statsEl) {
-  new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) document.querySelectorAll('.counter').forEach(animCounter);
-  }, { threshold: .5 }).observe(statsEl);
-}
-
-// ── SCROLL REVEAL ──────────────────────────────────────────────────────
-document.querySelectorAll('.reveal').forEach(el => {
-  new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      const sibs = [...entries[0].target.parentElement.querySelectorAll('.reveal')];
-      entries[0].target.style.transitionDelay = `${sibs.indexOf(entries[0].target) * 70}ms`;
-      entries[0].target.classList.add('visible');
-    }
-  }, { threshold: .1 }).observe(el);
-});
-
-// ── MARQUEE CLONE ──────────────────────────────────────────────────────
-const mq = document.getElementById('mq');
-mq.parentElement.appendChild(mq.cloneNode(true));
-</script>
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: fd });
+        const data = await res.json();
+        
+        if (res.ok) {
+          statusEl.textContent = '✅ Request sent! We\'ll contact you shortly.';
+          statusEl.style.color = '#16a34a';
+          form.reset();
+        } else {
+          throw new Error(data.error || 'Submission failed');
+        }
+      } catch (err) {
+        statusEl.textContent = '❌ ' + err.message;
+        statusEl.style.color = '#dc2626';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Request';
+      }
+    });
+  </script>
 </body>
 </html>
